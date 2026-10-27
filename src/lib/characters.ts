@@ -1,6 +1,7 @@
 import { cacheLife } from "next/cache";
 import { cache } from "react";
 
+import { isCharacterId } from "@/lib/avatar";
 import { executeQuery } from "@/lib/graphql/client";
 import type {
   CharacterCardFragment,
@@ -18,16 +19,17 @@ export type CharacterDetails = Omit<ApiCharacter, "episode"> & { episode: Episod
 /** The API always pages characters in groups of 20. */
 export const CHARACTERS_PER_PAGE = 20;
 
-export type CharacterPage = {
+export type CharacterListResult = {
   characters: CharacterSummary[];
   totalCount: number;
   totalPages: number;
 };
 
-// The character dataset changes rarely, so responses are cached for a day
-// and may be served stale for up to a week while they revalidate.
-
-export async function getCharacters(page: number, filter: FilterCharacter): Promise<CharacterPage> {
+/** One page of characters matching `filter`. Cached for a day: the dataset rarely changes. */
+export async function getCharacters(
+  page: number,
+  filter: FilterCharacter,
+): Promise<CharacterListResult> {
   "use cache";
   cacheLife("days");
 
@@ -47,11 +49,6 @@ async function fetchCharacter(id: string): Promise<CharacterDetails | null> {
   "use cache";
   cacheLife("days");
 
-  // The API answers non-numeric ids with an internal error instead of `null`.
-  if (!/^[1-9]\d*$/.test(id)) {
-    return null;
-  }
-
   const { character } = await executeQuery(characterQuery, { id });
   if (!character) {
     return null;
@@ -66,8 +63,11 @@ async function fetchCharacter(id: string): Promise<CharacterDetails | null> {
 /**
  * One character by id, or `null` if it doesn't exist.
  *
- * `React.cache` shares the result between `generateMetadata` and the page within
- * a request (POST requests aren't deduplicated by Next), so a page view costs a
- * single API call.
+ * Ids are validated first: the API answers malformed ids with an internal error
+ * instead of `null`, and they shouldn't take up cache entries. `React.cache`
+ * shares the result between `generateMetadata` and the page within a request.
  */
-export const getCharacter = cache(fetchCharacter);
+export const getCharacter = cache(
+  async (id: string): Promise<CharacterDetails | null> =>
+    isCharacterId(id) ? fetchCharacter(id) : null,
+);

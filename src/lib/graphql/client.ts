@@ -8,7 +8,7 @@ type GraphQLResponse<TResult> = {
   errors?: ReadonlyArray<{ message: string }>;
 };
 
-export class GraphQLRequestError extends Error {
+class GraphQLRequestError extends Error {
   override name = "GraphQLRequestError";
 }
 

@@ -1,6 +1,7 @@
 /*
- * Animations for React's <ViewTransition>. Each class below is assigned in a
- * component through the `share`, `enter` or `exit` props.
+ * Animations for React's <ViewTransition>. Classes (.morph, .slide-up, …) come
+ * from the `share`, `enter` and `exit` props; site-header and site-footer are
+ * view-transition names set on those elements.
  */
 
 :root {

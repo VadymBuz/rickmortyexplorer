@@ -50,19 +50,14 @@ export function parseEpisodeCode(code: string | null): { season: number; episode
   return match ? { season: Number(match[1]), episode: Number(match[2]) } : null;
 }
 
-type EpisodeLike = {
-  id: string | null;
-  name: string | null;
-  episode: string | null;
-  air_date: string | null;
-};
-
-export type SeasonGroup<T extends EpisodeLike> = {
+type SeasonGroup<T> = {
   season: number;
   episodes: Array<T & { number: number }>;
 };
 
-export function groupEpisodesBySeason<T extends EpisodeLike>(episodes: T[]): SeasonGroup<T>[] {
+export function groupEpisodesBySeason<T extends { episode: string | null }>(
+  episodes: T[],
+): SeasonGroup<T>[] {
   const seasons = new Map<number, Array<T & { number: number }>>();
 
   for (const episode of episodes) {

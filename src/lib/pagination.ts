@@ -5,53 +5,20 @@ function range(start: number, end: number): number[] {
 }
 
 /**
- * Builds the list of page links to show, e.g. `1 … 20 21 22 … 42`.
+ * The page links to show, e.g. `1 … 20 21 22 … 42`.
  *
- * Keeps a stable number of items so the control doesn't jump around while
- * paging, and never uses an ellipsis to hide a single page.
+ * Always seven items once there are more than seven pages, so the control
+ * doesn't jump around while paging, and an ellipsis never hides a single page.
  */
-export function getPaginationItems(
-  currentPage: number,
-  totalPages: number,
-  siblingCount = 1,
-  boundaryCount = 1,
-): PaginationItem[] {
-  if (totalPages <= 0) {
-    return [];
+export function getPaginationItems(page: number, totalPages: number): PaginationItem[] {
+  if (totalPages <= 7) {
+    return range(1, totalPages);
   }
-
-  const startPages = range(1, Math.min(boundaryCount, totalPages));
-  const endPages = range(
-    Math.max(totalPages - boundaryCount + 1, boundaryCount + 1),
-    totalPages,
-  );
-
-  const siblingsStart = Math.max(
-    Math.min(currentPage - siblingCount, totalPages - boundaryCount - siblingCount * 2 - 1),
-    boundaryCount + 2,
-  );
-  const siblingsEnd = Math.min(
-    Math.max(currentPage + siblingCount, boundaryCount + siblingCount * 2 + 2),
-    endPages.length > 0 ? endPages[0] - 2 : totalPages - 1,
-  );
-
-  const items: PaginationItem[] = [...startPages];
-
-  if (siblingsStart > boundaryCount + 2) {
-    items.push("start-ellipsis");
-  } else if (boundaryCount + 1 < totalPages - boundaryCount) {
-    items.push(boundaryCount + 1);
+  if (page <= 4) {
+    return [...range(1, 5), "end-ellipsis", totalPages];
   }
-
-  items.push(...range(siblingsStart, siblingsEnd));
-
-  if (siblingsEnd < totalPages - boundaryCount - 1) {
-    items.push("end-ellipsis");
-  } else if (totalPages - boundaryCount > boundaryCount) {
-    items.push(totalPages - boundaryCount);
+  if (page >= totalPages - 3) {
+    return [1, "start-ellipsis", ...range(totalPages - 4, totalPages)];
   }
-
-  items.push(...endPages);
-
-  return items;
+  return [1, "start-ellipsis", page - 1, page, page + 1, "end-ellipsis", totalPages];
 }

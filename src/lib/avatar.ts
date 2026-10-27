@@ -7,7 +7,12 @@
  * out of its card.
  */
 export function getAvatarUrl(id: string): string | null {
-  return /^[1-9]\d*$/.test(id) ? `https://rickandmortyapi.com/api/character/avatar/${id}.jpeg` : null;
+  return isCharacterId(id) ? `https://rickandmortyapi.com/api/character/avatar/${id}.jpeg` : null;
+}
+
+/** Character ids are positive integers. */
+export function isCharacterId(id: string): boolean {
+  return /^[1-9]\d*$/.test(id);
 }
 
 /** Shared view-transition name that pairs a card portrait with the detail portrait. */
