@@ -11,7 +11,7 @@ Browse, search and filter every character from _Rick and Morty_, and open any of
 - **Search and filters**: search by name, and filter by status, species and gender. All of it goes through the API, and the state lives in the URL, so every view can be shared and the back button works.
 - **Character page**: everything the API knows about a character, including all episodes grouped by season.
 - **Smooth navigation**: the portrait morphs from its card into the character page and back. Pages slide in the direction you're going, results crossfade between pages and filters, and loading skeletons hand over to content.
-- **Resilient states**: loading skeletons, empty results, unknown characters (404) and API failures with a retry button.
+- **Resilient states**: loading skeletons, empty results, a not-found page for unknown characters, and API failures with a retry button.
 - Responsive down to small phones, keyboard accessible and respects reduced motion.
 
 ## Tech stack
@@ -39,7 +39,9 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000). No environment variables or API keys are needed.
 
-`yarn install` prints three peer-dependency warnings for ESLint. Some plugins bundled by `eslint-config-next` haven't declared ESLint 10 support yet. Linting works and reports the same results as on ESLint 9.
+`yarn install` prints a few warnings from dependencies, all harmless:
+- Peer-dependency warnings, because some plugins bundled by `eslint-config-next` haven't declared ESLint 10 support yet. Linting works and reports the same results as on ESLint 9.
+- "Workspaces can only be enabled in private projects", caused by a field in ESLint's own `package.json`.
 
 For a production build:
 
@@ -73,7 +75,7 @@ src/
 │   └── view-transitions.css    View transition animations
 ├── components/
 │   ├── characters/             Feature components (cards, filters, pagination, profile…)
-│   ├── common/                 Shared pieces (error boundary, page transition, portal art)
+│   ├── common/                 Shared pieces (error boundary, page transition, button link, portal art)
 │   ├── layout/                 Site header and footer
 │   └── ui/                     shadcn/ui primitives (generated)
 └── lib/
@@ -82,6 +84,8 @@ src/
     ├── search-params.ts        URL ⇄ list state (parse, validate, build links)
     ├── pagination.ts           Which page links to show
     ├── format.ts               Readable labels for API values
+    ├── avatar.ts               Portrait URL and view-transition name for a character id
+    ├── list-view-memory.ts     The list view to return to from a character page
     └── *.test.ts               Unit tests next to the code they test
 ```
 
@@ -118,9 +122,12 @@ The character page renders the portrait from the URL alone, so it can morph in t
 - **Rate limiting.** The API answers bursts of requests with `429` and `Retry-After: 10`, for both GraphQL and images. To stay under it, responses are cached, only the "Next" page link prefetches its data, and portraits load straight from the API's CDN instead of through the Next image optimizer, which would funnel every visitor through one server. If a limit is still hit, the page shows a retry button, and a throttled portrait falls back to a placeholder.
 - **Species matching is partial**: filtering by "Human" also returns "Humanoid" characters. Pagination happens on the server, so the app can't narrow it down further.
 - Missing values come back as `"unknown"` or empty strings, and are shown as readable labels ("Status unknown", "Unknown species").
+- Unknown character ids show the not-found page with a `noindex` tag but an HTTP 200 status: the page has already started streaming when the lookup finishes, which is how Next documents `notFound()` inside `<Suspense>`. Malformed ids are rejected before any request is made.
 
 ## Possible improvements
 
 - End-to-end tests (Playwright) for search, filters and navigation.
+- Announce result counts to screen readers when filters change (a persistent live region).
+- Self-host a subset of the heading font with its bounce settings baked in: about 100 KB less to download.
 - Pages for locations and episodes, linked from the character page.
 - Retry with backoff for rate-limited requests, and a shared remote cache (`'use cache: remote'`) when deployed on multiple instances.
