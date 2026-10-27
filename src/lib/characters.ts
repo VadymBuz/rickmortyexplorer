@@ -1,4 +1,5 @@
 import { cacheLife } from "next/cache";
+import { cache } from "react";
 
 import { executeQuery } from "@/lib/graphql/client";
 import type {
@@ -39,7 +40,7 @@ export async function getCharacters(page: number, filter: FilterCharacter): Prom
   };
 }
 
-export async function getCharacter(id: string): Promise<CharacterDetails | null> {
+async function fetchCharacter(id: string): Promise<CharacterDetails | null> {
   "use cache";
   cacheLife("days");
 
@@ -58,3 +59,12 @@ export async function getCharacter(id: string): Promise<CharacterDetails | null>
     episode: character.episode.filter((episode) => episode != null),
   };
 }
+
+/**
+ * One character by id, or `null` if it doesn't exist.
+ *
+ * `React.cache` shares the result between `generateMetadata` and the page within
+ * a request (POST requests aren't deduplicated by Next), so a page view costs a
+ * single API call.
+ */
+export const getCharacter = cache(fetchCharacter);
