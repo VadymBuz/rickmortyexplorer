@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ViewTransition, type ReactNode } from "react";
 
 import { CharacterGrid } from "@/components/characters/character-grid";
 import { CharacterPagination } from "@/components/characters/character-pagination";
@@ -25,25 +26,52 @@ export async function CharacterResults({
     toCharacterFilter(params),
   );
 
+  const viewKey = getCharacterListHref(params);
+
   if (characters.length === 0) {
-    return <NoResults params={params} />;
+    return (
+      <ResultsTransition viewKey={viewKey}>
+        <NoResults params={params} />
+      </ResultsTransition>
+    );
   }
 
   const firstShown = (params.page - 1) * CHARACTERS_PER_PAGE + 1;
   const lastShown = firstShown + characters.length - 1;
 
   return (
-    <section aria-label="Characters">
-      <p className="mb-4 text-sm text-muted-foreground tabular-nums">
-        Showing {firstShown}–{lastShown} of {totalCount} characters
-      </p>
-      <CharacterGrid characters={characters} />
-      <CharacterPagination
-        page={params.page}
-        totalPages={totalPages}
-        getPageHref={(page) => getCharacterListHref({ ...params, page })}
-      />
-    </section>
+    <ResultsTransition viewKey={viewKey}>
+      <section aria-label="Characters">
+        <p className="mb-4 text-sm text-muted-foreground tabular-nums">
+          Showing {firstShown}–{lastShown} of {totalCount} characters
+        </p>
+        <CharacterGrid characters={characters} />
+        <CharacterPagination
+          page={params.page}
+          totalPages={totalPages}
+          getPageHref={(page) => getCharacterListHref({ ...params, page })}
+        />
+      </section>
+    </ResultsTransition>
+  );
+}
+
+/**
+ * Animates the results: they slide up when they first load, and crossfade when
+ * a new page or filter replaces them. Keying by the list URL makes React treat
+ * each view as new content rather than an in-place update.
+ */
+function ResultsTransition({ viewKey, children }: { viewKey: string; children: ReactNode }) {
+  return (
+    <ViewTransition
+      key={viewKey}
+      name="character-results"
+      share="auto"
+      enter="slide-up"
+      default="none"
+    >
+      {children}
+    </ViewTransition>
   );
 }
 

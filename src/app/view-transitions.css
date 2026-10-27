@@ -1,0 +1,125 @@
+/*
+ * Animations for React's <ViewTransition>. Each class below is assigned in a
+ * component through the `share`, `enter` or `exit` props.
+ */
+
+:root {
+  --vt-exit: 150ms;
+  --vt-enter: 210ms;
+  --vt-move: 400ms;
+}
+
+/* Clicks during an animation go to the live page, not the snapshot overlay. */
+::view-transition {
+  pointer-events: none;
+}
+
+/* Card portrait ↔ detail portrait. A slight blur hides scaling artifacts. */
+::view-transition-group(.morph) {
+  animation-duration: var(--vt-move);
+}
+::view-transition-image-pair(.morph) {
+  animation-name: vt-blur;
+}
+
+/* Suspense reveals: the skeleton leaves quickly, the content arrives gently. */
+::view-transition-old(.slide-down) {
+  animation:
+    var(--vt-exit) ease-out both vt-fade reverse,
+    var(--vt-exit) ease-out both vt-slide-y reverse;
+}
+::view-transition-new(.slide-up) {
+  animation:
+    var(--vt-enter) ease-in var(--vt-exit) both vt-fade,
+    var(--vt-move) ease-in both vt-slide-y;
+}
+
+/* Directional navigation: forward slides left, back slides right. */
+::view-transition-old(.nav-forward) {
+  --vt-offset: -60px;
+  animation:
+    var(--vt-exit) ease-in both vt-fade reverse,
+    var(--vt-move) ease-in-out both vt-slide-x reverse;
+}
+::view-transition-new(.nav-forward) {
+  --vt-offset: 60px;
+  animation:
+    var(--vt-enter) ease-out var(--vt-exit) both vt-fade,
+    var(--vt-move) ease-in-out both vt-slide-x;
+}
+::view-transition-old(.nav-back) {
+  --vt-offset: 60px;
+  animation:
+    var(--vt-exit) ease-in both vt-fade reverse,
+    var(--vt-move) ease-in-out both vt-slide-x reverse;
+}
+::view-transition-new(.nav-back) {
+  --vt-offset: -60px;
+  animation:
+    var(--vt-enter) ease-out var(--vt-exit) both vt-fade,
+    var(--vt-move) ease-in-out both vt-slide-x;
+}
+
+/* The header is the fixed reference point while page content moves. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* The footer moves with the page height: hide it, then fade it in once settled. */
+::view-transition-group(site-footer) {
+  animation: none;
+}
+::view-transition-old(site-footer) {
+  display: none;
+}
+::view-transition-new(site-footer) {
+  animation: var(--vt-enter) ease-out var(--vt-move) both vt-fade;
+}
+
+@keyframes vt-blur {
+  30% {
+    filter: blur(3px);
+  }
+}
+@keyframes vt-fade {
+  from {
+    filter: blur(3px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+@keyframes vt-slide-y {
+  from {
+    transform: translateY(10px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes vt-slide-x {
+  from {
+    translate: var(--vt-offset);
+  }
+  to {
+    translate: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

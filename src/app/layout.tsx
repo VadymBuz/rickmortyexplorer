@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 
 import "./globals.css";
+import "./view-transitions.css";
 
 const atkinson = Atkinson_Hyperlegible_Next({
   variable: "--font-atkinson",

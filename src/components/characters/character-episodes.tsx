@@ -1,7 +1,14 @@
 import type { Episode } from "@/lib/characters";
 import { groupEpisodesBySeason } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
-export function CharacterEpisodes({ episodes }: { episodes: Episode[] }) {
+export function CharacterEpisodes({
+  episodes,
+  className,
+}: {
+  episodes: Episode[];
+  className?: string;
+}) {
   const seasons = groupEpisodesBySeason(episodes);
 
   if (seasons.length === 0) {
@@ -9,7 +16,7 @@ export function CharacterEpisodes({ episodes }: { episodes: Episode[] }) {
   }
 
   return (
-    <section aria-labelledby="episodes-heading" className="mt-16 sm:mt-20">
+    <section aria-labelledby="episodes-heading" className={cn("mt-4", className)}>
       <h2 id="episodes-heading" className="font-heading text-2xl font-bold sm:text-3xl">
         Appears in {episodes.length} {episodes.length === 1 ? "episode" : "episodes"}
       </h2>

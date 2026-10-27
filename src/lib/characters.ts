@@ -11,7 +11,7 @@ import { characterQuery, charactersQuery } from "@/lib/graphql/queries";
 
 type ApiCharacter = NonNullable<CharacterQuery["character"]>;
 
-export type CharacterSummary = CharacterCardFragment;
+export type CharacterSummary = CharacterCardFragment & { id: string };
 export type Episode = NonNullable<ApiCharacter["episode"][number]>;
 export type CharacterDetails = Omit<ApiCharacter, "episode"> & { episode: Episode[] };
 
@@ -34,7 +34,10 @@ export async function getCharacters(page: number, filter: FilterCharacter): Prom
   const { characters } = await executeQuery(charactersQuery, { page, filter });
 
   return {
-    characters: characters?.results?.filter((character) => character != null) ?? [],
+    characters:
+      characters?.results?.filter(
+        (character): character is CharacterSummary => character?.id != null,
+      ) ?? [],
     totalCount: characters?.info?.count ?? 0,
     totalPages: characters?.info?.pages ?? 0,
   };

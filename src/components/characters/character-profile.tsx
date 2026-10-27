@@ -1,10 +1,8 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { CharacterAvatar } from "@/components/characters/character-avatar";
 import { CharacterEpisodes } from "@/components/characters/character-episodes";
 import { CharacterStatus } from "@/components/characters/character-status";
-import { Portal } from "@/components/common/portal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCharacter } from "@/lib/characters";
 import {
@@ -15,8 +13,10 @@ import {
   parseEpisodeCode,
 } from "@/lib/format";
 
-const portraitSizes = "(min-width: 768px) 22rem, 15rem";
-
+/**
+ * The character's name, facts and episodes. Renders two items into the detail
+ * page grid, next to the portrait, which the page shows before this data loads.
+ */
 export async function CharacterProfile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const character = await getCharacter(id);
@@ -32,52 +32,40 @@ export async function CharacterProfile({ params }: { params: Promise<{ id: strin
   const firstEpisodeCode = parseEpisodeCode(firstEpisode?.episode ?? null);
 
   return (
-    <article>
-      <div className="grid items-start gap-14 md:grid-cols-[minmax(0,22rem)_1fr] md:gap-16">
-        <div className="relative isolate mx-auto w-full max-w-60 md:max-w-none">
-          <Portal className="absolute top-1/2 left-1/2 -z-10 size-[165%] -translate-x-1/2 -translate-y-1/2" />
-          <CharacterAvatar
-            src={character.image}
-            sizes={portraitSizes}
-            eager
-            className="rounded-3xl ring-4 ring-background/70"
-          />
-        </div>
+    <>
+      <div>
+        <h1 className="display-type font-heading text-4xl font-bold tracking-tight text-balance sm:text-6xl">
+          {character.name}
+        </h1>
+        <CharacterStatus status={character.status} className="mt-3 text-lg" />
 
-        <div>
-          <h1 className="display-type font-heading text-4xl font-bold tracking-tight text-balance sm:text-6xl">
-            {character.name}
-          </h1>
-          <CharacterStatus status={character.status} className="mt-3 text-lg" />
-
-          <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-x-10">
-            <Fact label="Species">{formatSpecies(character.species)}</Fact>
-            {character.type && <Fact label="Type">{character.type}</Fact>}
-            <Fact label="Gender">{formatGender(character.gender)}</Fact>
-            <Fact label="Origin" details={origin.details}>
-              {origin.name}
+        <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-x-10">
+          <Fact label="Species">{formatSpecies(character.species)}</Fact>
+          {character.type && <Fact label="Type">{character.type}</Fact>}
+          <Fact label="Gender">{formatGender(character.gender)}</Fact>
+          <Fact label="Origin" details={origin.details}>
+            {origin.name}
+          </Fact>
+          <Fact label="Last known location" details={location.details}>
+            {location.name}
+          </Fact>
+          {firstEpisode && (
+            <Fact
+              label="First seen in"
+              details={
+                firstEpisodeCode &&
+                `Season ${firstEpisodeCode.season}, episode ${firstEpisodeCode.episode}`
+              }
+            >
+              {firstEpisode.name}
             </Fact>
-            <Fact label="Last known location" details={location.details}>
-              {location.name}
-            </Fact>
-            {firstEpisode && (
-              <Fact
-                label="First seen in"
-                details={
-                  firstEpisodeCode &&
-                  `Season ${firstEpisodeCode.season}, episode ${firstEpisodeCode.episode}`
-                }
-              >
-                {firstEpisode.name}
-              </Fact>
-            )}
-            {created && <Fact label="Added to the API">{created}</Fact>}
-          </dl>
-        </div>
+          )}
+          {created && <Fact label="Added to the API">{created}</Fact>}
+        </dl>
       </div>
 
-      <CharacterEpisodes episodes={character.episode} />
-    </article>
+      <CharacterEpisodes episodes={character.episode} className="md:col-span-2" />
+    </>
   );
 }
 
@@ -104,20 +92,15 @@ function Fact({
 export function CharacterProfileSkeleton() {
   return (
     <div aria-busy aria-label="Loading character">
-      <div className="grid items-start gap-10 md:grid-cols-[minmax(0,22rem)_1fr] md:gap-14">
-        <Skeleton className="mx-auto aspect-square w-full max-w-60 rounded-3xl md:max-w-none" />
-        <div>
-          <Skeleton className="h-12 w-3/4 sm:h-16" />
-          <Skeleton className="mt-4 h-6 w-24" />
-          <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-x-10">
-            {Array.from({ length: 6 }, (_, index) => (
-              <div key={index} className="space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-6 w-40" />
-              </div>
-            ))}
+      <Skeleton className="h-12 w-3/4 sm:h-16" />
+      <Skeleton className="mt-4 h-6 w-24" />
+      <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-x-10">
+        {Array.from({ length: 6 }, (_, index) => (
+          <div key={index} className="space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-6 w-32" />
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
