@@ -14,6 +14,9 @@ export type CharacterSummary = CharacterCardFragment;
 export type Episode = NonNullable<ApiCharacter["episode"][number]>;
 export type CharacterDetails = Omit<ApiCharacter, "episode"> & { episode: Episode[] };
 
+/** The API always pages characters in groups of 20. */
+export const CHARACTERS_PER_PAGE = 20;
+
 export type CharacterPage = {
   characters: CharacterSummary[];
   totalCount: number;

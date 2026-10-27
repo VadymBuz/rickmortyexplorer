@@ -7,22 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
+  --font-sans: var(--font-atkinson);
+  --font-heading: var(--font-shantell);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -39,6 +25,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-alive: var(--status-alive);
+  --color-dead: var(--status-dead);
+  --color-cyan: var(--rick-cyan);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -48,83 +37,104 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Palette: deep-space indigo with the show's portal green as the one bright
+ * colour. The app is dark-only, so <html> always carries the `dark` class.
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  --space-void: #120e36;
+  --space-nebula: #2a1a63;
+  --portal-green: #97ce4c;
+  --rick-cyan: #8fd8e8;
+  --starlight: #eceafb;
+  --dust: #a39fc9;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--space-void);
+  --foreground: var(--starlight);
+  --card: rgb(236 234 251 / 0.04);
+  --card-foreground: var(--starlight);
+  --popover: #1d1650;
+  --popover-foreground: var(--starlight);
+  --primary: var(--portal-green);
+  --primary-foreground: #132a0a;
+  --secondary: #241c5a;
+  --secondary-foreground: var(--starlight);
+  --muted: #221a55;
+  --muted-foreground: var(--dust);
+  --accent: #2c2366;
+  --accent-foreground: var(--starlight);
+  --destructive: #ff6b7a;
+  --border: rgb(236 234 251 / 0.1);
+  --input: rgb(236 234 251 / 0.16);
+  --ring: var(--portal-green);
+  --radius: 0.75rem;
+
+  --status-alive: var(--portal-green);
+  --status-dead: #ff6b7a;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply font-sans;
+    color-scheme: dark;
+  }
   body {
     @apply bg-background text-foreground;
   }
-  html {
-    @apply font-sans;
-  }
+}
+
+/* Deep-space backdrop: nebula haze over an indigo gradient, plus static stars. */
+.space-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 90% -10%, rgb(143 216 232 / 0.13), transparent 70%),
+    radial-gradient(70rem 45rem at 40% 115%, rgb(122 64 196 / 0.32), transparent 70%),
+    radial-gradient(40rem 30rem at -10% 60%, rgb(151 206 76 / 0.06), transparent 70%),
+    linear-gradient(180deg, var(--space-nebula) 0%, var(--space-void) 55%, #0e0a2c 100%);
+}
+
+.space-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Tiles of co-prime sizes so the star pattern doesn't visibly repeat. */
+  background-image:
+    radial-gradient(1px 1px at 23px 41px, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(1px 1px at 151px 173px, rgb(255 255 255 / 0.45), transparent),
+    radial-gradient(1.5px 1.5px at 67px 211px, rgb(236 234 251 / 0.8), transparent),
+    radial-gradient(1px 1px at 289px 97px, rgb(143 216 232 / 0.6), transparent),
+    radial-gradient(1px 1px at 331px 301px, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 389px 19px, rgb(255 255 255 / 0.65), transparent);
+  background-size:
+    233px 233px,
+    233px 233px,
+    347px 347px,
+    347px 347px,
+    419px 419px,
+    419px 419px;
+}
+
+.portal-mark {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 45% 55%,
+    #e2fab4 0 18%,
+    var(--portal-green) 42%,
+    #4f8a2b 70%,
+    transparent 72%
+  );
+  box-shadow: 0 0 12px rgb(151 206 76 / 0.55);
+}
+
+/* Shantell Sans' bounce and informality axes give headings a hand-lettered feel. */
+.display-type {
+  font-variation-settings:
+    "BNCE" 40,
+    "INFM" 30;
 }
