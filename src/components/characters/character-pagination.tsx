@@ -21,7 +21,7 @@ export function CharacterPagination({ page, totalPages, getPageHref }: Character
 
       <ul className="hidden items-center gap-1 sm:flex">
         {getPaginationItems(page, totalPages).map((item) => (
-          <li key={item}>
+          <li key={item} aria-hidden={typeof item === "number" ? undefined : true}>
             {typeof item === "number" ? (
               <ButtonLink
                 href={getPageHref(item)}
@@ -34,9 +34,7 @@ export function CharacterPagination({ page, totalPages, getPageHref }: Character
                 {item}
               </ButtonLink>
             ) : (
-              <span aria-hidden className="px-2 text-muted-foreground">
-                …
-              </span>
+              <span className="px-2 text-muted-foreground">…</span>
             )}
           </li>
         ))}
@@ -79,7 +77,7 @@ function StepLink({ href, direction }: { href: string | null; direction: "previo
       variant="ghost"
       size="lg"
       // Only "Next" prefetches its results: it's the likely click, and the API rate-limits.
-      prefetch={direction === "next"}
+      prefetch={direction === "next" ? true : "auto"}
       rel={direction === "next" ? "next" : "prev"}
     >
       {content}

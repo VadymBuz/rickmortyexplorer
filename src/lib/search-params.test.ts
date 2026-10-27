@@ -5,6 +5,7 @@ import {
   getCharacterListHref,
   hasActiveFilters,
   parseCharacterListParams,
+  parseURLSearchParams,
   toCharacterFilter,
 } from "./search-params";
 
@@ -49,8 +50,21 @@ describe("parseCharacterListParams", () => {
     );
   });
 
+  it("caps the page at the largest number the API accepts", () => {
+    expect(parseCharacterListParams({ page: "3000000000" }).page).toBe(2_147_483_647);
+  });
+
   it("caps very long names", () => {
     expect(parseCharacterListParams({ name: "a".repeat(500) }).name).toHaveLength(100);
+  });
+});
+
+describe("parseURLSearchParams", () => {
+  it("reads repeated keys the same way as the server", () => {
+    const query = "status=dead&status=alive&page=4&page=9";
+    expect(parseURLSearchParams(new URLSearchParams(query))).toEqual(
+      parseCharacterListParams({ status: ["dead", "alive"], page: ["4", "9"] }),
+    );
   });
 });
 

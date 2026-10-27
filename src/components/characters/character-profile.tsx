@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { CharacterEpisodes } from "@/components/characters/character-episodes";
 import { CharacterStatus } from "@/components/characters/character-status";
+import { PageHeading } from "@/components/common/page-heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCharacter } from "@/lib/characters";
 import {
@@ -34,9 +35,9 @@ export async function CharacterProfile({ params }: { params: Promise<{ id: strin
   return (
     <>
       <div>
-        <h1 className="display-type font-heading text-4xl font-bold tracking-tight text-balance sm:text-6xl">
+        <PageHeading className="display-type font-heading text-4xl font-bold tracking-tight text-balance sm:text-6xl">
           {character.name}
-        </h1>
+        </PageHeading>
         <CharacterStatus status={character.status} className="mt-3 text-lg" />
 
         <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-x-10">
@@ -89,19 +90,39 @@ function Fact({
   );
 }
 
+/** Mirrors the two grid items of the profile, so the page doesn't shift when it loads. */
 export function CharacterProfileSkeleton() {
   return (
-    <div aria-busy aria-label="Loading character">
-      <Skeleton className="h-12 w-3/4 sm:h-16" />
-      <Skeleton className="mt-4 h-6 w-24" />
-      <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-x-10">
-        {Array.from({ length: 6 }, (_, index) => (
-          <div key={index} className="space-y-2">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-6 w-32" />
+    <>
+      <div role="status">
+        <span className="sr-only">Loading character…</span>
+        <div aria-hidden>
+          <Skeleton className="h-12 w-3/4 sm:h-16" />
+          <Skeleton className="mt-4 h-6 w-24" />
+          <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:gap-x-10">
+            {Array.from({ length: 6 }, (_, index) => (
+              <div key={index} className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-6 w-32" />
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
-    </div>
+
+      <div aria-hidden className="mt-4 md:col-span-2">
+        <Skeleton className="h-8 w-64 sm:h-9" />
+        <div className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }, (_, index) => (
+            <div key={index} className="space-y-3 border-t pt-4">
+              <Skeleton className="h-6 w-24" />
+              {Array.from({ length: 4 }, (_, row) => (
+                <Skeleton key={row} className="h-10 w-full" />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }

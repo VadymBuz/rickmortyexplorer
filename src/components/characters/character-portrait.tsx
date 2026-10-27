@@ -24,8 +24,8 @@ export function CharacterPortrait() {
       <ViewTransition name={getAvatarTransitionName(id)} share="morph" default="none">
         <CharacterAvatar
           src={getAvatarUrl(id)}
-          sizes="(min-width: 768px) 22rem, 15rem"
           eager
+          highPriority
           className="rounded-3xl ring-4 ring-background/70"
         />
       </ViewTransition>
@@ -35,7 +35,7 @@ export function CharacterPortrait() {
 
 export function CharacterPortraitSkeleton() {
   return (
-    <div className={frameClassName}>
+    <div aria-hidden className={frameClassName}>
       <Skeleton className="aspect-square rounded-3xl" />
     </div>
   );

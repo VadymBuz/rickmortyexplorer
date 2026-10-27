@@ -10,7 +10,7 @@ export function SiteHeader() {
       <Link
         href="/"
         transitionTypes={["nav-back"]}
-        className="flex items-center gap-2.5 rounded-md font-heading text-lg font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/60"
+        className="flex items-center gap-2.5 rounded-md font-heading text-lg font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span aria-hidden className="portal-mark size-6" />
         Rick &amp; Morty Explorer

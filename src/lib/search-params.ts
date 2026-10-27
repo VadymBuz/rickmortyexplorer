@@ -35,9 +35,9 @@ export const GENDER_OPTIONS = [
 
 type OptionValue<T extends ReadonlyArray<{ value: string }>> = T[number]["value"];
 
-export type StatusFilter = OptionValue<typeof STATUS_OPTIONS>;
-export type SpeciesFilter = OptionValue<typeof SPECIES_OPTIONS>;
-export type GenderFilter = OptionValue<typeof GENDER_OPTIONS>;
+type StatusFilter = OptionValue<typeof STATUS_OPTIONS>;
+type SpeciesFilter = OptionValue<typeof SPECIES_OPTIONS>;
+type GenderFilter = OptionValue<typeof GENDER_OPTIONS>;
 
 /** Everything that describes one view of the character list. Lives in the URL. */
 export type CharacterListParams = {
@@ -57,14 +57,16 @@ export const DEFAULT_LIST_PARAMS: CharacterListParams = {
 };
 
 const MAX_NAME_LENGTH = 100;
+// The API's `page` argument is a GraphQL Int (32-bit); larger values are rejected.
+const MAX_PAGE = 2_147_483_647;
 
 function firstValue(value: SearchParamValue): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
-export function parsePage(value: SearchParamValue): number {
+function parsePage(value: SearchParamValue): number {
   const page = Number(firstValue(value));
-  return Number.isSafeInteger(page) && page > 0 ? page : 1;
+  return Number.isInteger(page) && page > 0 ? Math.min(page, MAX_PAGE) : 1;
 }
 
 function parseOption<T extends ReadonlyArray<{ value: string }>>(
@@ -84,6 +86,15 @@ export function parseCharacterListParams(searchParams: RawSearchParams): Charact
     species: parseOption(searchParams.species, SPECIES_OPTIONS),
     gender: parseOption(searchParams.gender, GENDER_OPTIONS),
   };
+}
+
+/** Same as `parseCharacterListParams`, for the browser's `URLSearchParams`. */
+export function parseURLSearchParams(searchParams: URLSearchParams): CharacterListParams {
+  const raw: RawSearchParams = {};
+  for (const key of searchParams.keys()) {
+    raw[key] = searchParams.getAll(key);
+  }
+  return parseCharacterListParams(raw);
 }
 
 export function hasActiveFilters(params: CharacterListParams): boolean {

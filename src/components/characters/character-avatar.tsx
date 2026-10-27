@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 
 type CharacterAvatarProps = {
   src: string | null;
-  sizes: string;
   eager?: boolean;
+  /** For the largest image on the page. */
+  highPriority?: boolean;
   className?: string;
 };
 
@@ -20,7 +21,12 @@ type CharacterAvatarProps = {
  * funnels every visitor's requests into the CDN's per-IP rate limit. If a
  * request is still throttled, the muted square stays instead of a broken image.
  */
-export function CharacterAvatar({ src, sizes, eager = false, className }: CharacterAvatarProps) {
+export function CharacterAvatar({
+  src,
+  eager = false,
+  highPriority = false,
+  className,
+}: CharacterAvatarProps) {
   const [failed, setFailed] = useState(false);
 
   return (
@@ -31,8 +37,8 @@ export function CharacterAvatar({ src, sizes, eager = false, className }: Charac
           alt=""
           fill
           unoptimized
-          sizes={sizes}
           loading={eager ? "eager" : "lazy"}
+          fetchPriority={highPriority ? "high" : undefined}
           className="object-cover"
           onError={() => setFailed(true)}
         />

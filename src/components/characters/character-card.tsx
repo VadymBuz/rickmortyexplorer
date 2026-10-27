@@ -23,7 +23,6 @@ export function CharacterCard({
       <ViewTransition name={getAvatarTransitionName(character.id)} share="morph" default="none">
         <CharacterAvatar
           src={character.image}
-          sizes="(min-width: 1280px) 15rem, (min-width: 1024px) 22vw, (min-width: 640px) 30vw, 46vw"
           eager={eager}
           className="rounded-xl"
         />

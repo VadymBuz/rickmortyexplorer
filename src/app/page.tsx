@@ -4,7 +4,6 @@ import { CharacterFilters, CharacterFiltersSkeleton } from "@/components/charact
 import { CharacterGridSkeleton } from "@/components/characters/character-grid";
 import { CharacterResults } from "@/components/characters/character-results";
 import { ListViewTracker } from "@/components/characters/list-view-tracker";
-import { DataErrorBoundary } from "@/components/common/data-error-boundary";
 import { PageTransition } from "@/components/common/page-transition";
 import { Portal } from "@/components/common/portal";
 
@@ -28,17 +27,15 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
           <CharacterFilters />
         </Suspense>
 
-        <DataErrorBoundary title="Characters didn't load">
-          <Suspense
-            fallback={
-              <ViewTransition exit="slide-down" default="none">
-                <CharacterGridSkeleton />
-              </ViewTransition>
-            }
-          >
-            <CharacterResults searchParams={searchParams} />
-          </Suspense>
-        </DataErrorBoundary>
+        <Suspense
+          fallback={
+            <ViewTransition exit="slide-down" default="none">
+              <CharacterGridSkeleton />
+            </ViewTransition>
+          }
+        >
+          <CharacterResults searchParams={searchParams} />
+        </Suspense>
       </main>
     </PageTransition>
   );

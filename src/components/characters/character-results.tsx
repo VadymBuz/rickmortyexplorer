@@ -1,8 +1,9 @@
-import { ViewTransition, type ReactNode } from "react";
+import { ViewTransition } from "react";
 
 import { CharacterGrid } from "@/components/characters/character-grid";
 import { CharacterPagination } from "@/components/characters/character-pagination";
 import { ButtonLink } from "@/components/common/button-link";
+import { DataErrorBoundary } from "@/components/common/data-error-boundary";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { CHARACTERS_PER_PAGE, getCharacters } from "@/lib/characters";
 import {
@@ -14,63 +15,55 @@ import {
   type RawSearchParams,
 } from "@/lib/search-params";
 
+/**
+ * The results for the list view in the URL.
+ *
+ * Each view (search, filters, page) gets its own error boundary and view
+ * transition. A failed request doesn't stick once the query changes (`catchError`
+ * only resets on pathname changes, and every view is `/`), and React crossfades
+ * between views instead of updating one in place.
+ */
 export async function CharacterResults({
   searchParams,
 }: {
   searchParams: Promise<RawSearchParams>;
 }) {
   const params = parseCharacterListParams(await searchParams);
+
+  return (
+    <DataErrorBoundary key={getCharacterListHref(params)} title="Characters didn't load">
+      <ViewTransition name="character-results" share="auto" enter="slide-up" default="none">
+        <ResultsView params={params} />
+      </ViewTransition>
+    </DataErrorBoundary>
+  );
+}
+
+async function ResultsView({ params }: { params: CharacterListParams }) {
   const { characters, totalCount, totalPages } = await getCharacters(
     params.page,
     toCharacterFilter(params),
   );
 
-  const viewKey = getCharacterListHref(params);
-
   if (characters.length === 0) {
-    return (
-      <ResultsTransition viewKey={viewKey}>
-        <NoResults params={params} />
-      </ResultsTransition>
-    );
+    return <NoResults params={params} />;
   }
 
   const firstShown = (params.page - 1) * CHARACTERS_PER_PAGE + 1;
   const lastShown = firstShown + characters.length - 1;
 
   return (
-    <ResultsTransition viewKey={viewKey}>
-      <section aria-label="Characters">
-        <p className="mb-4 text-sm text-muted-foreground tabular-nums">
-          Showing {firstShown}–{lastShown} of {totalCount} characters
-        </p>
-        <CharacterGrid characters={characters} />
-        <CharacterPagination
-          page={params.page}
-          totalPages={totalPages}
-          getPageHref={(page) => getCharacterListHref({ ...params, page })}
-        />
-      </section>
-    </ResultsTransition>
-  );
-}
-
-/**
- * Animates the results: they slide up when they first load, and crossfade when
- * a new page or filter replaces them. Keying by the list URL makes React treat
- * each view as new content rather than an in-place update.
- */
-function ResultsTransition({ viewKey, children }: { viewKey: string; children: ReactNode }) {
-  return (
-    <ViewTransition
-      key={viewKey}
-      name="character-results"
-      share="auto"
-      enter="slide-up"
-      default="none"
-    >
-      {children}
-    </ViewTransition>
+    <section aria-label="Characters">
+      <p className="mb-4 text-sm text-muted-foreground tabular-nums">
+        Showing {firstShown}–{lastShown} of {totalCount} characters
+      </p>
+      <CharacterGrid characters={characters} />
+      <CharacterPagination
+        page={params.page}
+        totalPages={totalPages}
+        getPageHref={(page) => getCharacterListHref({ ...params, page })}
+      />
+    </section>
   );
 }
 
@@ -94,7 +87,9 @@ function NoResults({ params }: { params: CharacterListParams }) {
   return (
     <Empty className="border py-16">
       <EmptyHeader>
-        <EmptyTitle className="text-xl">{title}</EmptyTitle>
+        <EmptyTitle className="text-xl">
+          <h2>{title}</h2>
+        </EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>

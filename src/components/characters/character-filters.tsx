@@ -15,7 +15,7 @@ import {
   STATUS_OPTIONS,
   getCharacterListHref,
   hasActiveFilters,
-  parseCharacterListParams,
+  parseURLSearchParams,
   type CharacterListParams,
 } from "@/lib/search-params";
 
@@ -26,7 +26,7 @@ type FilterKey = "status" | "species" | "gender";
 export function CharacterFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = parseCharacterListParams(Object.fromEntries(searchParams));
+  const params = parseURLSearchParams(searchParams);
 
   const [isPending, startTransition] = useTransition();
   // Shows the requested filters right away, while the new results are loading.
@@ -53,6 +53,9 @@ export function CharacterFilters() {
   function handleNameChange(name: string) {
     setNameDraft(name);
     window.clearTimeout(debounceRef.current);
+    if (name.trim() === optimisticParams.name) {
+      return;
+    }
     debounceRef.current = window.setTimeout(() => {
       navigate({ ...currentParams(), name: name.trim(), page: 1 }, "replace");
     }, SEARCH_DEBOUNCE_MS);
@@ -64,7 +67,7 @@ export function CharacterFilters() {
     }
   }
 
-  function handleFilterChange(key: FilterKey, value: string | null) {
+  function handleFilterChange<K extends FilterKey>(key: K, value: CharacterListParams[K]) {
     navigate({ ...currentParams(), [key]: value, page: 1 }, "push");
   }
 
@@ -148,17 +151,23 @@ export function CharacterFilters() {
   );
 }
 
-type FilterSelectProps = {
+type FilterSelectProps<T extends string> = {
   label: string;
   anyLabel: string;
-  options: ReadonlyArray<{ value: string; label: string }>;
-  value: string | null;
-  onChange: (value: string | null) => void;
+  options: ReadonlyArray<{ value: T; label: string }>;
+  value: T | null;
+  onChange: (value: T | null) => void;
 };
 
-function FilterSelect({ label, anyLabel, options, value, onChange }: FilterSelectProps) {
+function FilterSelect<T extends string>({
+  label,
+  anyLabel,
+  options,
+  value,
+  onChange,
+}: FilterSelectProps<T>) {
   return (
-    <Select items={options} value={value} onValueChange={(next) => onChange(next as string | null)}>
+    <Select items={options} value={value} onValueChange={onChange}>
       <SelectTrigger
         aria-label={label}
         className="w-full min-w-0 text-base data-[size=default]:h-10 lg:w-44 lg:text-sm"
