@@ -39,6 +39,8 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000). No environment variables or API keys are needed.
 
+`yarn install` prints three peer-dependency warnings for ESLint. Some plugins bundled by `eslint-config-next` haven't declared ESLint 10 support yet. Linting works and reports the same results as on ESLint 9.
+
 For a production build:
 
 ```bash
