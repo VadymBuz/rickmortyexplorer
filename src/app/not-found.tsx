@@ -1,6 +1,4 @@
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/common/button-link";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 
 export default function NotFound() {
@@ -16,9 +14,9 @@ export default function NotFound() {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button size="lg" nativeButton={false} render={<Link href="/" />}>
+          <ButtonLink href="/" size="lg">
             Browse all characters
-          </Button>
+          </ButtonLink>
         </EmptyContent>
       </Empty>
     </main>

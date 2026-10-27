@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { ViewTransition, type ReactNode } from "react";
 
 import { CharacterGrid } from "@/components/characters/character-grid";
 import { CharacterPagination } from "@/components/characters/character-pagination";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/common/button-link";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { CHARACTERS_PER_PAGE, getCharacters } from "@/lib/characters";
 import {
@@ -99,9 +98,7 @@ function NoResults({ params }: { params: CharacterListParams }) {
         <EmptyDescription>{description}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button nativeButton={false} render={<Link href={href} />}>
-          {action}
-        </Button>
+        <ButtonLink href={href}>{action}</ButtonLink>
       </EmptyContent>
     </Empty>
   );

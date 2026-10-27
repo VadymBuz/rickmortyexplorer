@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Link from "next/link";
 
+import { ButtonLink } from "@/components/common/button-link";
 import { Button } from "@/components/ui/button";
 import { getPaginationItems } from "@/lib/pagination";
 
@@ -23,21 +23,16 @@ export function CharacterPagination({ page, totalPages, getPageHref }: Character
         {getPaginationItems(page, totalPages).map((item) => (
           <li key={item}>
             {typeof item === "number" ? (
-              <Button
+              <ButtonLink
+                href={getPageHref(item)}
                 variant={item === page ? "default" : "ghost"}
                 size="lg"
                 className="min-w-9 tabular-nums"
-                nativeButton={false}
-                render={
-                  <Link
-                    href={getPageHref(item)}
-                    aria-label={`Page ${item}`}
-                    aria-current={item === page ? "page" : undefined}
-                  />
-                }
+                aria-label={`Page ${item}`}
+                aria-current={item === page ? "page" : undefined}
               >
                 {item}
-              </Button>
+              </ButtonLink>
             ) : (
               <span aria-hidden className="px-2 text-muted-foreground">
                 …
@@ -79,14 +74,15 @@ function StepLink({ href, direction }: { href: string | null; direction: "previo
   }
 
   return (
-    <Button
+    <ButtonLink
+      href={href}
       variant="ghost"
       size="lg"
-      nativeButton={false}
       // Only "Next" prefetches its results: it's the likely click, and the API rate-limits.
-      render={<Link href={href} prefetch={direction === "next"} rel={direction === "next" ? "next" : "prev"} />}
+      prefetch={direction === "next"}
+      rel={direction === "next" ? "next" : "prev"}
     >
       {content}
-    </Button>
+    </ButtonLink>
   );
 }
