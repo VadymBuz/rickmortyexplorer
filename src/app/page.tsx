@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { CharacterFilters, CharacterFiltersSkeleton } from "@/components/characters/character-filters";
 import { CharacterGridSkeleton } from "@/components/characters/character-grid";
 import { CharacterResults } from "@/components/characters/character-results";
 import { DataErrorBoundary } from "@/components/common/data-error-boundary";
@@ -18,6 +19,10 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
           gender.
         </p>
       </section>
+
+      <Suspense fallback={<CharacterFiltersSkeleton />}>
+        <CharacterFilters />
+      </Suspense>
 
       <DataErrorBoundary title="Characters didn't load">
         <Suspense fallback={<CharacterGridSkeleton />}>

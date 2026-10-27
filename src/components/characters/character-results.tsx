@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { CHARACTERS_PER_PAGE, getCharacters } from "@/lib/characters";
 import {
+  DEFAULT_LIST_PARAMS,
   getCharacterListHref,
   parseCharacterListParams,
+  toCharacterFilter,
+  type CharacterListParams,
   type RawSearchParams,
 } from "@/lib/search-params";
 
@@ -17,22 +20,13 @@ export async function CharacterResults({
   searchParams: Promise<RawSearchParams>;
 }) {
   const params = parseCharacterListParams(await searchParams);
-  const { characters, totalCount, totalPages } = await getCharacters(params.page, {});
+  const { characters, totalCount, totalPages } = await getCharacters(
+    params.page,
+    toCharacterFilter(params),
+  );
 
   if (characters.length === 0) {
-    return (
-      <Empty className="border py-16">
-        <EmptyHeader>
-          <EmptyTitle className="text-xl">No characters on this page</EmptyTitle>
-          <EmptyDescription>This page is past the end of the list.</EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-          <Button nativeButton={false} render={<Link href={getCharacterListHref({ page: 1 })} />}>
-            Go to the first page
-          </Button>
-        </EmptyContent>
-      </Empty>
-    );
+    return <NoResults params={params} />;
   }
 
   const firstShown = (params.page - 1) * CHARACTERS_PER_PAGE + 1;
@@ -50,5 +44,37 @@ export async function CharacterResults({
         getPageHref={(page) => getCharacterListHref({ ...params, page })}
       />
     </section>
+  );
+}
+
+function NoResults({ params }: { params: CharacterListParams }) {
+  // The API answers both "nothing matches" and "page past the end" with an empty list.
+  const { title, description, action, href } =
+    params.page > 1
+      ? {
+          title: "No characters on this page",
+          description: "This page is past the end of the list.",
+          action: "Go to the first page",
+          href: getCharacterListHref({ ...params, page: 1 }),
+        }
+      : {
+          title: "No characters match your search",
+          description: "Try a different name, or remove some of the filters.",
+          action: "Clear filters",
+          href: getCharacterListHref(DEFAULT_LIST_PARAMS),
+        };
+
+  return (
+    <Empty className="border py-16">
+      <EmptyHeader>
+        <EmptyTitle className="text-xl">{title}</EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button nativeButton={false} render={<Link href={href} />}>
+          {action}
+        </Button>
+      </EmptyContent>
+    </Empty>
   );
 }

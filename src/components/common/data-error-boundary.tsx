@@ -17,7 +17,8 @@ function DataErrorFallback({ title }: { title: string }, { error, retry }: Error
       <EmptyHeader>
         <EmptyTitle className="text-xl">{title}</EmptyTitle>
         <EmptyDescription>
-          The Rick and Morty API didn&apos;t respond. Check your connection, then try again.
+          The Rick and Morty API didn&apos;t respond or is limiting requests. Wait a few seconds,
+          then try again.
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>

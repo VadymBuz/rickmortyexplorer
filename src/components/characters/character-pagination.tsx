@@ -83,7 +83,8 @@ function StepLink({ href, direction }: { href: string | null; direction: "previo
       variant="ghost"
       size="lg"
       nativeButton={false}
-      render={<Link href={href} prefetch rel={direction === "next" ? "next" : "prev"} />}
+      // Only "Next" prefetches its results: it's the likely click, and the API rate-limits.
+      render={<Link href={href} prefetch={direction === "next"} rel={direction === "next" ? "next" : "prev"} />}
     >
       {content}
     </Button>
