@@ -15,9 +15,15 @@
   pointer-events: none;
 }
 
-/* Card portrait ↔ detail portrait. A slight blur hides scaling artifacts. */
+/*
+ * Card portrait ↔ detail portrait. A slight blur hides scaling artifacts.
+ * Groups stack in the order their names first appear, and the portrait's name
+ * comes from the previous page, so without a z-index the incoming page (with
+ * its portal art) would be drawn over it. The header stays on top.
+ */
 ::view-transition-group(.morph) {
   animation-duration: var(--vt-move);
+  z-index: 50;
 }
 ::view-transition-image-pair(.morph) {
   animation-name: vt-blur;
